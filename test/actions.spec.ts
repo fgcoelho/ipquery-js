@@ -31,6 +31,22 @@ describe("IPQuery API Integration", () => {
 	});
 });
 
+describe("IPQuery API Validation", () => {
+	it("should throw error when bulk IPs exceed 10,000", async () => {
+		const ipList = Array.from({ length: 10_001 }, (_, i) => `1.1.1.${i}`);
+
+		await expect(ip.query(ipList)).rejects.toThrow(
+			"IP list can't exceed 10,000 IPs, check https://ipquery.gitbook.io/ipquery-docs#bulk-query-a-list-of-ip-addresss",
+		);
+	});
+
+	it("should throw error for invalid IP address", async () => {
+		await expect(ip.query("invalid-ip")).rejects.toThrow(
+			"Invalid IP address: invalid-ip",
+		);
+	});
+});
+
 describe("IPQuery API Caching", () => {
 	it("should use cache for specific() on second call", async () => {
 		await ip.query("1.1.1.1");
