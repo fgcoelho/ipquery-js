@@ -98,8 +98,11 @@ describe("consume function", () => {
 	});
 
 	it("should throw error when API returns error response", async () => {
-		const errorResponse = { error: "Something went wrong" };
-		fetchMock.mockResponseOnce(JSON.stringify(errorResponse));
+		const errorResponse = {
+			error: "IPQuery error",
+		};
+
+		fetchMock.mockResponseOnce(errorResponse.error, { status: 500 });
 
 		await expect(
 			consume(
@@ -107,7 +110,7 @@ describe("consume function", () => {
 				{ params: { id: "123" } },
 				{ baseUrl: mockBaseUrl },
 			),
-		).rejects.toEqual(errorResponse.error);
+		).rejects.toEqual(new Error(`(500) IPQuery error: ${errorResponse.error}`));
 	});
 
 	it("should use default baseUrl when not provided", async () => {
