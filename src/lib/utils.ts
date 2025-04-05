@@ -15,7 +15,7 @@ export type IRequest = {
 
 export type IResponse = AnyType;
 
-export const data = <B extends RequestData = RequestData>() =>
+export const data = <B extends RequestData | string = RequestData | string>() =>
 	null as AnyType as B;
 
 export const endpoint = <
