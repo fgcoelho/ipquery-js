@@ -5,6 +5,8 @@ const globalQuery = data<{
 	format: IPQueryResponseFormat;
 }>();
 
+export type IPQueryGlobalQuery = typeof globalQuery;
+
 export const IPQueryEndpoints = {
 	self: endpoint({
 		url: "/",
