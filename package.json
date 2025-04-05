@@ -1,26 +1,26 @@
 {
-  "name": "ipquery",
-  "license": "MIT",
-  "author": "Fernando Coelho",
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "------------- toolchain -------------": "-------------",
-    "format": "biome format --write",
-    "lint": "biome lint --error-on-warnings",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "1.9.4",
-    "tsup": "8.4.0",
-    "vitest": "^3.1.1",
-    "vitest-fetch-mock": "^0.4.5"
-  },
-  "dependencies": {
-    "@types/node": "^22.14.0"
-  },
-  "publishConfig": {
-    "access": "public"
-  }
+	"name": "ipquery",
+	"license": "MIT",
+	"author": "Fernando Coelho",
+	"version": "0.0.0",
+	"type": "module",
+	"scripts": {
+		"------------- toolchain -------------": "-------------",
+		"format": "biome format --write",
+		"lint": "biome lint --error-on-warnings",
+		"typecheck": "tsc --noEmit",
+		"test": "vitest"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "1.9.4",
+		"tsup": "8.4.0",
+		"vitest": "^3.1.1",
+		"vitest-fetch-mock": "^0.4.5"
+	},
+	"dependencies": {
+		"@types/node": "^22.14.0"
+	},
+	"publishConfig": {
+		"access": "public"
+	}
 }
