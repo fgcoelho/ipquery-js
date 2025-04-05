@@ -10,20 +10,20 @@ const measure = async <T>(fn: () => Promise<T>) => {
 
 describe("IPQuery API Integration", () => {
 	it("should return a valid response from self()", async () => {
-		const res = await ip.self();
+		const res = await ip.query("self");
 		expect(res).toBeDefined();
 		expect(typeof res).toBe("object");
 		expect(res).toHaveProperty("ip");
 	});
 
 	it("should return info for a specific IP", async () => {
-		const res = await ip.specific("1.1.1.1");
+		const res = await ip.query("1.1.1.1");
 		expect(res).toBeDefined();
 		expect(res).toHaveProperty("ip", "1.1.1.1");
 	});
 
 	it("should return info for a list of IPs", async () => {
-		const res = await ip.bulk(["8.8.8.8", "1.1.1.1"]);
+		const res = await ip.query(["8.8.8.8", "1.1.1.1"]);
 		expect(res).toBeDefined();
 		expect(Array.isArray(res)).toBe(true);
 		expect(res.length).toBe(2);
@@ -33,17 +33,17 @@ describe("IPQuery API Integration", () => {
 
 describe("IPQuery API Caching", () => {
 	it("should use cache for specific() on second call", async () => {
-		await ip.specific("1.1.1.1");
+		await ip.query("1.1.1.1");
 
-		const { duration: fromCache } = await measure(() => ip.specific("1.1.1.1"));
+		const { duration: fromCache } = await measure(() => ip.query("1.1.1.1"));
 		expect(fromCache).toBeLessThan(10);
 	});
 
 	it("should only fetch uncached IPs in bulk()", async () => {
-		await ip.specific("8.8.8.8");
+		await ip.query("8.8.8.8");
 
 		const { duration, result } = await measure(() =>
-			ip.bulk(["8.8.8.8", "1.0.0.1"]),
+			ip.query(["8.8.8.8", "1.0.0.1"]),
 		);
 
 		expect(result.length).toBe(2);
@@ -54,9 +54,9 @@ describe("IPQuery API Caching", () => {
 	});
 
 	it("should be very fast when all bulk IPs are cached", async () => {
-		await ip.bulk(["1.1.1.1", "8.8.8.8"]);
+		await ip.query(["1.1.1.1", "8.8.8.8"]);
 
-		const { duration } = await measure(() => ip.bulk(["1.1.1.1", "8.8.8.8"]));
+		const { duration } = await measure(() => ip.query(["1.1.1.1", "8.8.8.8"]));
 
 		expect(duration).toBeLessThan(10);
 	});
