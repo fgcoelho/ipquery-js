@@ -40,8 +40,6 @@ export const validateIPQueryInput = (input: IPQueryInput) => {
 
 		for (const [index, ip] of input.entries()) {
 			if (!validateIP(ip)) {
-				process.stdout.write(JSON.stringify(input, null, 2) + "\n");
-
 				throw new Error(`Invalid IP addres '${ip}' at index '${index}'`);
 			}
 		}
