@@ -1,90 +1,53 @@
-import type { IPQueryIPResponse } from "src/api/types";
 import type {
-	IPQueryCache,
-	IPQueryGlobalOptions,
-	IPQueryInput,
-} from "../types";
-import { IPQueryEndpoints } from "src/api/endpoints";
-import { consume } from "src/api/consume";
+	IPQueryJsonResponse,
+	IPQueryResponseFormat,
+	IPQueryTextResponse,
+} from "src/api/types";
+import type { IPAddr, IPQueryInput } from "../types";
+import type { IPQueryCache } from "../cache";
 import { validateIPQueryInput } from "./validation";
+import { selfQueryCase } from "./cases/self";
+import { arrayQueryCase } from "./cases/array";
+import { singleQueryCase } from "./cases/single";
 
 export const queryAction = (cache: IPQueryCache) => {
-	async function query(
-		input: "self",
-		options?: IPQueryGlobalOptions,
-	): Promise<IPQueryIPResponse>;
-	async function query(
-		input: string,
-		options?: IPQueryGlobalOptions,
-	): Promise<IPQueryIPResponse>;
-	async function query(
-		input: string[],
-		options?: IPQueryGlobalOptions,
-	): Promise<IPQueryIPResponse[]>;
-
-	async function query(
-		input: IPQueryInput,
-		options?: IPQueryGlobalOptions,
-	): Promise<IPQueryIPResponse[] | IPQueryIPResponse> {
+	async function query<
+		TInput extends IPQueryInput,
+		TFormat extends IPQueryResponseFormat = "json",
+	>(
+		input: TInput,
+		options?: { format?: TFormat | IPQueryResponseFormat },
+	): Promise<
+		TInput extends string[]
+			? TFormat extends "json"
+				? IPQueryJsonResponse[]
+				: IPQueryTextResponse[]
+			: TFormat extends "json"
+				? IPQueryJsonResponse
+				: IPQueryTextResponse
+	> {
 		const format = options?.format ?? "json";
 
-		if (input === "self") {
-			if (cache.self) {
-				return cache.IPs.get(cache.self) as IPQueryIPResponse;
-			}
+		validateIPQueryInput(input);
 
-			validateIPQueryInput(input);
-
-			const response = await consume(IPQueryEndpoints.self, {
-				query: { format },
-			});
-
-			cache.self = response.ip;
-
-			return response;
+		const isSelf = input === "self";
+		if (isSelf) {
+			return await selfQueryCase(cache, format);
 		}
 
-		if (Array.isArray(input)) {
-			const uncachedIPs = input.filter((ip) => !cache.IPs.has(ip));
-
-			if (uncachedIPs.length > 0) {
-				let response = await consume(IPQueryEndpoints.bulk, {
-					params: {
-						ip_list: uncachedIPs.join(","),
-					},
-					query: {
-						format,
-					},
-				});
-
-				if (!Array.isArray(response)) {
-					response = [response];
-				}
-
-				for (const ipResp of response) {
-					if (ipResp?.ip) {
-						cache.IPs.set(ipResp.ip, ipResp);
-					}
-				}
-			}
-
-			return input.map((ip) => cache.IPs.get(ip)) as IPQueryIPResponse[];
+		const isArrayInput = Array.isArray(input) && input.length > 1;
+		if (isArrayInput) {
+			return await arrayQueryCase(cache, input, format);
 		}
 
-		if (cache.IPs.has(input)) {
-			return cache.IPs.get(input) as IPQueryIPResponse;
+		const singleIp = Array.isArray(input) ? input[0] : (input as IPAddr);
+		if (singleIp) {
+			return await singleQueryCase(cache, singleIp, format);
 		}
 
-		const response = await consume(IPQueryEndpoints.specific, {
-			params: { ip: input },
-			query: { format },
-		});
-
-		if (response?.ip) {
-			cache.IPs.set(response.ip, response);
-		}
-
-		return response;
+		throw new Error(
+			"Invalid input. Expected a single IP address or an array of IP addresses.",
+		);
 	}
 
 	return query;
