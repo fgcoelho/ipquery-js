@@ -1,11 +1,13 @@
 import { data, endpoint } from "src/lib/utils";
-import type { IPQueryIPResponse, IPQueryResponseFormat } from "./types";
+import type {
+	IPQueryBulkResponse,
+	IPQueryResponse,
+	IPQueryResponseFormat,
+} from "./types";
 
 const globalQuery = data<{
 	format: IPQueryResponseFormat;
 }>();
-
-export type IPQueryGlobalQuery = typeof globalQuery;
 
 export const IPQueryEndpoints = {
 	self: endpoint({
@@ -14,7 +16,7 @@ export const IPQueryEndpoints = {
 		request: {
 			query: globalQuery,
 		},
-		response: data<IPQueryIPResponse>(),
+		response: data<IPQueryResponse>(),
 	}),
 	specific: endpoint({
 		url: "/{ip}",
@@ -22,7 +24,7 @@ export const IPQueryEndpoints = {
 		request: {
 			query: globalQuery,
 		},
-		response: data<IPQueryIPResponse>(),
+		response: data<IPQueryResponse>(),
 	}),
 	bulk: endpoint({
 		url: "/{ip_list}",
@@ -30,6 +32,6 @@ export const IPQueryEndpoints = {
 		request: {
 			query: globalQuery,
 		},
-		response: data<IPQueryIPResponse[]>(),
+		response: data<IPQueryBulkResponse>(),
 	}),
 };

@@ -73,12 +73,20 @@ export async function consume<
 		headers: headers,
 		body,
 	})
-		.then((res) => res.json())
-		.then((json) => {
-			if ("error" in json) {
-				throw json.error;
+		.then(async (res) => {
+			if (!res.ok) {
+				const text = await res.text();
+				throw new Error(`(${res.status}) IPQuery error: ${text}`);
 			}
 
-			return json as Defined<E["response"]>;
-		});
+			return await res.text();
+		})
+		.then((text) => {
+			try {
+				return JSON.parse(text);
+			} catch {
+				return text;
+			}
+		})
+		.then((v) => v as Defined<E["response"]>);
 }
