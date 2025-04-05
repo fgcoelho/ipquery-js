@@ -6,6 +6,7 @@ import type {
 } from "../types";
 import { IPQueryEndpoints } from "src/api/endpoints";
 import { consume } from "src/api/consume";
+import { validateIPQueryInput } from "./validation";
 
 export const queryAction = (cache: IPQueryCache) => {
 	async function query(
@@ -31,6 +32,8 @@ export const queryAction = (cache: IPQueryCache) => {
 			if (cache.self) {
 				return cache.IPs.get(cache.self) as IPQueryIPResponse;
 			}
+
+			validateIPQueryInput(input);
 
 			const response = await consume(IPQueryEndpoints.self, {
 				query: { format },
