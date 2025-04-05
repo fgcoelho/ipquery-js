@@ -1,5 +1,4 @@
-import { describe, expect, it } from "vitest";
-import { ip } from "src";
+import { beforeEach, describe, expect, expectTypeOf, it, vi } from "vitest";
 
 const measure = async <T>(fn: () => Promise<T>) => {
 	const start = performance.now();
@@ -7,6 +6,13 @@ const measure = async <T>(fn: () => Promise<T>) => {
 	const duration = performance.now() - start;
 	return { result, duration };
 };
+
+let ip: typeof import("src").ip;
+
+beforeEach(async () => {
+	vi.resetModules();
+	({ ip } = await import("src"));
+});
 
 describe("IPQuery API Integration", () => {
 	it("should return a valid response from self()", async () => {
