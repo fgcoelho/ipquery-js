@@ -1,11 +1,7 @@
-import type { IPQueryIPResponse } from "src/api/types";
-import type { IPQueryCache } from "./types";
 import { queryAction } from "./query/query";
+import { createIPQueryCache } from "./cache";
 
-const cache: IPQueryCache = {
-	self: "",
-	IPs: new Map<string, IPQueryIPResponse>(),
-};
+const cache = createIPQueryCache();
 
 export const ip = {
 	query: queryAction(cache),
