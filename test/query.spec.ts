@@ -54,32 +54,51 @@ describe("IPQuery API Validation", () => {
 });
 
 describe("IPQuery API Caching", () => {
-	it("should use cache for specific() on second call", async () => {
+	it("shouldn't call fetch for single query on second call", async () => {
+		const fetchSpy = vi.spyOn(global, "fetch");
+
 		await ip.query("1.1.1.1");
 
-		const { duration: fromCache } = await measure(() => ip.query("1.1.1.1"));
-		expect(fromCache).toBeLessThan(10);
+		fetchSpy.mockClear();
+
+		const res = await ip.query("1.1.1.1");
+
+		expect(res).toHaveProperty("ip");
+		expect(fetchSpy).toHaveBeenCalledTimes(0);
+
+		fetchSpy.mockRestore();
 	});
 
 	it("should only fetch uncached IPs in bulk()", async () => {
+		const fetchSpy = vi.spyOn(global, "fetch");
+
 		await ip.query("8.8.8.8");
 
-		const { duration, result } = await measure(() =>
-			ip.query(["8.8.8.8", "1.0.0.1"]),
-		);
+		fetchSpy.mockClear();
 
-		expect(result.length).toBe(2);
-		expect(result.find((r) => r.ip === "8.8.8.8")).toBeDefined();
-		expect(result.find((r) => r.ip === "1.0.0.1")).toBeDefined();
+		const res = await ip.query(["8.8.8.8", "1.1.1.1"]);
 
-		expect(duration).toBeLessThan(200);
+		expect(res.length).toBe(2);
+		expect(fetchSpy).toHaveBeenCalledTimes(1);
+
+		const urlCalled = fetchSpy.mock.calls[0][0];
+		expect(urlCalled).toMatch(/1\.1\.1\.1/);
+
+		fetchSpy.mockRestore();
 	});
 
-	it("should be very fast when all bulk IPs are cached", async () => {
-		await ip.query(["1.1.1.1", "8.8.8.8"]);
+	it("shouldn't call fetch bulk query for second call", async () => {
+		const fetchSpy = vi.spyOn(global, "fetch");
 
-		const { duration } = await measure(() => ip.query(["1.1.1.1", "8.8.8.8"]));
+		await ip.query(["8.8.8.8", "1.1.1.1"]);
 
-		expect(duration).toBeLessThan(10);
+		fetchSpy.mockClear();
+
+		const res = await ip.query(["8.8.8.8", "1.1.1.1"]);
+
+		expect(res.length).toBe(2);
+		expect(fetchSpy).toHaveBeenCalledTimes(0);
+
+		fetchSpy.mockRestore();
 	});
 });
