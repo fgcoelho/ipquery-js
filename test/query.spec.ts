@@ -35,6 +35,23 @@ describe("IPQuery API Integration", () => {
 		expect(res.length).toBe(2);
 		expect(res[0]).toHaveProperty("ip");
 	});
+
+	it("should return text for custom format", async () => {
+		const res = await ip.query("9.9.9.9");
+
+		expect(res).toBeDefined();
+	});
+
+	it("should return text array for custom format in bulk", async () => {
+		const res = await ip.query(["8.8.8.8", "1.1.1.1"], {
+			format: "yaml",
+		});
+
+		expect(res).toBeDefined();
+		expect(res.length).toBe(2);
+		expect(Array.isArray(res)).toBe(true);
+		expectTypeOf(res[0]).toBeString;
+	});
 });
 
 describe("IPQuery API Validation", () => {
