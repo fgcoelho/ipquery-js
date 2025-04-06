@@ -118,4 +118,25 @@ describe("IPQuery API Caching", () => {
 
 		fetchSpy.mockRestore();
 	});
+
+	it("should fetch once for second single query call when cache is disabled", async () => {
+		const fetchSpy = vi.spyOn(global, "fetch");
+
+		ip.config({
+			cache: {
+				disable: true,
+			},
+		});
+
+		await ip.query("1.1.1.1");
+
+		fetchSpy.mockClear();
+
+		const res = await ip.query("1.1.1.1");
+
+		expect(res).toHaveProperty("ip");
+		expect(fetchSpy).toHaveBeenCalledTimes(1);
+
+		fetchSpy.mockRestore();
+	});
 });
