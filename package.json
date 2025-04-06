@@ -1,8 +1,23 @@
 {
 	"name": "ipquery",
+	"description": "ipquery sdk for javascript",
+	"version": "0.0.2",
+	"keywords": [
+		"ip",
+		"ipapi",
+		"ipquery",
+		"ip-address",
+		"ip-lookup",
+		"ip-geolocation"
+	],
 	"license": "MIT",
 	"author": "Fernando Coelho",
-	"version": "0.0.1",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/fgcoelho/ipquery-js.git"
+	},
+	"homepage": "https://github.com/fgcoelho/ipquery-js.git",
+	"files": ["dist"],
 	"type": "module",
 	"scripts": {
 		"------------- toolchain -------------": "-------------",
@@ -28,9 +43,7 @@
 	},
 	"typesVersions": {
 		"*": {
-			".": [
-				"./dist/index.d.cts"
-			]
+			".": ["./dist/index.d.cts"]
 		}
 	},
 	"devDependencies": {
