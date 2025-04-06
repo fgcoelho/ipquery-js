@@ -1,4 +1,4 @@
-# IPQueryJs
+# 🌐 ipquery-js
 
 ## What is IPQuery?
 
@@ -7,6 +7,20 @@ A [very cool service](https://ipquery.io/) for fetching information about IP add
 ## Disclaimer
 
 This package is not affiliated, associated neither endorsed by [IPQuery](https://github.com/ipqwery).
+
+## Install
+
+
+```bash
+# npm
+npm install ipquery
+
+# pnpm
+pnpm add ipquery
+
+# yarn
+yarn add ipquery
+```
 
 ## Usage
 
