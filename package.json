@@ -9,16 +9,30 @@
 		"format": "biome format --write",
 		"lint": "biome lint --error-on-warnings",
 		"typecheck": "tsc --noEmit",
-		"test": "vitest"
+		"test": "vitest",
+		"dev": "pnpm tsup --env.mode dev",
+		"------------- build -------------": "-------------",
+		"build": "rm -rf dist && pnpm tsup --env.mode release",
+		"bundlesize": "pnpm build --metafile && npm pack --dry-run",
+		"bundlesize:dev": "pnpm tsup --metafile && npm pack --dry-run"
+	},
+	"main": "./dist/index.cjs",
+	"types": "./dist/index.d.cts",
+	"exports": {
+		".": "./dist/index.cjs"
+	},
+	"typesVersions": {
+		"*": {
+			".": ["./dist/index.d.cts"]
+		}
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",
+		"@types/node": "^22.14.0",
 		"tsup": "8.4.0",
+		"typescript": "^5.8.3",
 		"vitest": "^3.1.1",
 		"vitest-fetch-mock": "^0.4.5"
-	},
-	"dependencies": {
-		"@types/node": "^22.14.0"
 	},
 	"publishConfig": {
 		"access": "public"
