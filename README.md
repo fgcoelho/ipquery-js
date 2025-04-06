@@ -58,3 +58,9 @@ const getYamlIp = async (ipAddress: string) => {
     return yamlText
 }
 ```
+
+## Caching
+
+By default, `ip.query` will cache no more than 100 items, and it will clear after 5 minutes. 
+
+You can config or opt out the caching by using `ip.config({ cache })` somewhere in your app.
