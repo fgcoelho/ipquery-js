@@ -1,5 +1,6 @@
 import type {
 	IPQueryJsonResponse,
+	IPQueryResponse,
 	IPQueryResponseFormat,
 	IPQueryTextResponse,
 } from "src/api/types";
@@ -15,7 +16,23 @@ export async function arrayQueryCase(
 	input: IPAddr[],
 	format: IPQueryResponseFormat,
 ) {
-	const uncachedRequestedIps = input.filter((ip) => !cache.has(ip, format));
+	const queryResult = [] as AnyType[];
+
+	const uncachedRequestedIps = [] as IPAddr[];
+	const cachedIps = [] as IPQueryResponse[];
+	if (cache.isEnabled()) {
+		for (const ip of input) {
+			const cachedIp = cache.get(ip, format);
+
+			if (cachedIp) {
+				cachedIps.push(cachedIp);
+
+				queryResult.push(cachedIp);
+			} else {
+				uncachedRequestedIps.push(ip);
+			}
+		}
+	}
 
 	if (uncachedRequestedIps.length > 0) {
 		const response = await consume(IPQueryEndpoints.bulk, {
@@ -44,10 +61,10 @@ export async function arrayQueryCase(
 			const res = bulkArray[i];
 
 			cache.set(`${ip}-${format}`, res);
+
+			queryResult.push(res);
 		}
 	}
-
-	const queryResult = input.map((ip) => cache.get(ip, format));
 
 	return queryResult as AnyType;
 }
