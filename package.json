@@ -28,12 +28,15 @@
 	},
 	"typesVersions": {
 		"*": {
-			".": ["./dist/index.d.cts"]
+			".": [
+				"./dist/index.d.cts"
+			]
 		}
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",
 		"@types/node": "^22.14.0",
+		"terser": "^5.39.0",
 		"tsup": "8.4.0",
 		"typescript": "^5.8.3",
 		"vitest": "^3.1.1",
